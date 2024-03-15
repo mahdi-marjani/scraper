@@ -109,10 +109,7 @@ class TwitterUser:
 
     # ---------------- Tweeter Thread ----------------
 
-    def get_username(self, article) -> tuple[str, str]:
-        xpath = "//div[@data-testid='User-Name']"
-        user_tag = article.find_element(By.XPATH, xpath).text
-        
+    def get_username(self, user_tag: str) -> tuple[str, str]:
         index = user_tag.find('@')
         name = user_tag[:index-2] 
         username = user_tag[index:]
@@ -121,18 +118,6 @@ class TwitterUser:
         print(username)
 
         return name, username
-    
-    def get_photo(self, article) -> str | None:
-        xpath = "//img[contains(@src, 'twimg')]"
-        photo = self.driver.find_element(By.XPATH, xpath).text
-
-        return photo
-    
-    def get_tweet(self, article) -> str | None:
-        xpath = "//div[@data-testid='tweetText]"
-        tweet = article.find_element(By.XPATH, xpath).text
-
-        return tweet
     
     def get_info_per_link(self, link: str, number_of_replies_from_each_thread: int) -> dict[tuple[str, str], tuple[str | None, str | None]]:
         self.driver.get(link)
@@ -143,16 +128,15 @@ class TwitterUser:
         sleep(5)
 
         xpath = '//article[@data-testid="tweet"]'
-        articles = self.driver.find_elements(By.XPATH, xpath)
+        tweets = self.driver.find_elements(By.XPATH, xpath)
         
         counter = 0
 
         while True:
-            for article in articles:
+            for tweet in tweets:
                 try:
-                    user_tag = article.find_element(By.XPATH, "//div[@data-testid='User-Name']").text
-                    name, username = 
-
+                    user_tag = tweet.find_element(By.XPATH, "//div[@data-testid='User-Name']").text
+                    name, username = self.get_username(user_tag)
 
                     sleep(1)
 
@@ -160,14 +144,19 @@ class TwitterUser:
                     tweetPhoto = None
 
                     try:
-                        tweetText = self.get_tweet(article)
+                        tweetText = tweet.find_element(By.XPATH, "//div[@data-testid='tweetText']").text
+                        sleep(1)
+
                     except:
-                        tweetText = None
+                        tweetText = None # No tweet found
 
                     try:
-                        tweetPhoto = self.get_photo(article)
+                        tweetPhotoPath = tweet.find_element(By.XPATH, "//img[contains(@src, 'twimg')]")
+                        tweetPhoto = tweetPhotoPath.get_attribute('src')
+                        sleep(1)
+
                     except:
-                        tweetPhoto = None
+                        tweetPhoto = None # No photo found
 
                     if (name, username) not in users.keys():
                         users[(name, username)] = (tweetText, tweetPhoto)
@@ -179,7 +168,7 @@ class TwitterUser:
 
 
                 self.driver.execute_script('window.scrollBy(0, 400)', "")
-                articles = self.driver.find_elements(By.XPATH, xpath)
+                tweets = self.driver.find_elements(By.XPATH, xpath)
 
                 if number_of_replies_from_each_thread == counter:
                     break
