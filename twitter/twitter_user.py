@@ -28,7 +28,7 @@ class TwitterUser:
         self.driver.get(self.insta_url)
 
         self.array = list()
-        self.objects = {}
+        self.objects: dict[str, str] = {}
 
     # ---------------- Twitter User Info ----------------
 
@@ -109,9 +109,9 @@ class TwitterUser:
 
     # ---------------- Tweeter Thread ----------------
 
-    def get_username(self) -> tuple[str, str]:
+    def get_username(self, article) -> tuple[str, str]:
         xpath = "//div[@data-testid='User-Name']"
-        user_tag = self.driver.find_element(By.XPATH, xpath).text
+        user_tag = article.find_element(By.XPATH, xpath).text
         
         index = user_tag.find('@')
         name = user_tag[:index-2] 
@@ -122,19 +122,23 @@ class TwitterUser:
 
         return name, username
     
-    def get_photo(self) -> str | None:
-        xpath = "//div[@data-testid='tweetPhoto']"
+    def get_photo(self, article) -> str | None:
+        xpath = "//img[contains(@src, 'twimg')]"
         photo = self.driver.find_element(By.XPATH, xpath).text
 
-        print(photo)
+        return photo
+    
+    def get_tweet(self, article) -> str | None:
+        xpath = "//div[@data-testid='tweetText]"
+        tweet = article.find_element(By.XPATH, xpath).text
 
-        return photo if photo else None
-
-    def get_info_per_link(self, link: str, number_of_replies_from_each_thread: int) -> dict:
+        return tweet
+    
+    def get_info_per_link(self, link: str, number_of_replies_from_each_thread: int) -> dict[tuple[str, str], tuple[str | None, str | None]]:
         self.driver.get(link)
         wait = WebDriverWait(self.driver, 10)
 
-        users = dict()
+        users: dict[tuple[str, str], tuple[str | None, str | None]] = dict()
 
         sleep(5)
 
@@ -145,16 +149,35 @@ class TwitterUser:
 
         while True:
             for article in articles:
-                name, username = self.get_username()
-                photo = self.get_photo()
-                sleep(1.2)
+                try:
+                    user_tag = article.find_element(By.XPATH, "//div[@data-testid='User-Name']").text
+                    name, username = 
 
-                if (name, username) not in users.keys():
-                    users[(name, username)] = photo
-    
-                    counter += 1
 
-                sleep(1)
+                    sleep(1)
+
+                    tweetText = None
+                    tweetPhoto = None
+
+                    try:
+                        tweetText = self.get_tweet(article)
+                    except:
+                        tweetText = None
+
+                    try:
+                        tweetPhoto = self.get_photo(article)
+                    except:
+                        tweetPhoto = None
+
+                    if (name, username) not in users.keys():
+                        users[(name, username)] = (tweetText, tweetPhoto)
+
+                        counter += 1
+
+                except Exception as e:
+                    print(f"Error retrieving tweet details: {e}")
+
+
                 self.driver.execute_script('window.scrollBy(0, 400)', "")
                 articles = self.driver.find_elements(By.XPATH, xpath)
 
