@@ -119,11 +119,11 @@ class TwitterUser:
 
         return name, username
     
-    def get_info_per_link(self, link: str, number_of_replies_from_each_thread: int) -> dict[tuple[str, str], tuple[str | None, str | None]]:
+    def get_info_per_link(self, link: str, number_of_replies_from_each_thread: int) -> dict[tuple[str, str], tuple[str | None, str | None, str | None]]:
         self.driver.get(link)
         wait = WebDriverWait(self.driver, 10)
 
-        users: dict[tuple[str, str], tuple[str | None, str | None]] = dict()
+        users: dict[tuple[str, str], tuple[str | None, str | None, str | None]] = dict()
 
         sleep(5)
 
@@ -142,33 +142,53 @@ class TwitterUser:
 
                     tweetText = None
                     tweetPhoto = None
+                    tweetVideo = None
 
                     try:
                         tweetText = tweet.find_element(By.XPATH, "//div[@data-testid='tweetText']").text
-                        sleep(1)
+                        print()
+                        print('Finding text.')
+                        sleep(3)
 
                     except:
-                        tweetText = None # No tweet found
+                        tweetText = None 
+                        print('No text found.')
 
                     try:
                         tweetPhotoPath = tweet.find_element(By.XPATH, "//img[contains(@src, 'twimg')]")
                         tweetPhoto = tweetPhotoPath.get_attribute('src')
-                        sleep(1)
+                        print()
+                        print('Finding tweet photo.')
+                        sleep(3)
+        
+                    except:
+                        tweetPhoto = None 
+                        print('No photo found.')
+
+                    try:
+                        tweetVideoPath = tweet.find_element(By.XPATH, "//div[@data-testid='videoComponent']")
+                        tweetVideo = tweetVideoPath.get_attribute('src')
+                        print()
+                        print('Finding tweet video.')
+                        sleep(3)
 
                     except:
-                        tweetPhoto = None # No photo found
+                        tweetVideo = None
+                        print('No video found.')
 
-                    if (name, username) not in users.keys():
-                        users[(name, username)] = (tweetText, tweetPhoto)
+                    if (name, username) not in users.keys(): 
+                        users[(name, username)] = (tweetText, tweetPhoto, tweetVideo)
+                        print(users)
 
                         counter += 1
+                        
+                    else:
+                        sleep(1)
+                        self.driver.execute_script('window.scrollBy(0, 500)', "")
+                        tweets = self.driver.find_elements(By.XPATH, xpath)
 
                 except Exception as e:
                     print(f"Error retrieving tweet details: {e}")
-
-
-                self.driver.execute_script('window.scrollBy(0, 400)', "")
-                tweets = self.driver.find_elements(By.XPATH, xpath)
 
                 if number_of_replies_from_each_thread == counter:
                     break
