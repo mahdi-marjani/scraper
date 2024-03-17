@@ -9,8 +9,6 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.event_firing_webdriver import EventFiringWebDriver, EventFiringWebElement
 from selenium.webdriver.common.by import By
 
-from bs4 import BeautifulSoup
-
 from time import sleep
 
 class TwitterUser:
@@ -145,9 +143,10 @@ class TwitterUser:
                     tweetVideo = None
 
                     try:
-                        tweetText = tweet.find_element(By.XPATH, "//div[@data-testid='tweetText']").text
                         print()
                         print('Finding text.')
+                        tweetText = tweet.find_element(By.XPATH, "//div[@data-testid='tweetText']").text
+                        print(f'Text found: {tweetText}')
                         sleep(3)
 
                     except:
@@ -155,10 +154,11 @@ class TwitterUser:
                         print('No text found.')
 
                     try:
-                        tweetPhotoPath = tweet.find_element(By.XPATH, "//img[contains(@src, 'twimg')]")
-                        tweetPhoto = tweetPhotoPath.get_attribute('src')
                         print()
                         print('Finding tweet photo.')
+                        tweetPhotoPath = tweet.find_element(By.XPATH, "//img[contains(@src, 'twimg')]")
+                        tweetPhoto = tweetPhotoPath.get_attribute('src')
+                        print(f'Tweet photo found: {tweetPhoto}')
                         sleep(3)
         
                     except:
@@ -166,10 +166,11 @@ class TwitterUser:
                         print('No photo found.')
 
                     try:
-                        tweetVideoPath = tweet.find_element(By.XPATH, "//div[@data-testid='videoComponent']")
-                        tweetVideo = tweetVideoPath.get_attribute('src')
                         print()
                         print('Finding tweet video.')
+                        tweetVideoPath = tweet.find_element(By.XPATH, "//div[@data-testid='videoComponent']")
+                        tweetVideo = tweetVideoPath.get_attribute('src')
+                        print(f'Tweet video found: {tweetVideo}')
                         sleep(3)
 
                     except:
@@ -178,7 +179,9 @@ class TwitterUser:
 
                     if (name, username) not in users.keys(): 
                         users[(name, username)] = (tweetText, tweetPhoto, tweetVideo)
+                        print()
                         print(users)
+                        print()
 
                         counter += 1
                         
