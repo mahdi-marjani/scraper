@@ -50,19 +50,31 @@ class Twitter:
 
         print(links)
 
-        all_info = []
+        all_info: dict[str, dict[tuple[str, str], tuple[str | None, str | None, str | None]]] = dict() 
+
+        link_counter: int = 1
 
         for link in links:
-            info = self.twitter_user.get_info_per_link(link, self.number_of_replies_from_each_thread)
-            all_info.append(info)
+            info = self.twitter_user.get_info_per_link(link, self.number_of_replies_from_each_thread, link_counter)
+            all_info[link] = info
+
+            link_counter += 1
+
+        print()
+        print()
+        print('-------------------------------------------------------------------------------')
+        print(all_info)
+        print('-------------------------------------------------------------------------------')
+        print()
+        print()
+
 
         print()
         print()
 
-        print(self.twitter_user.objects)
 
 link = "https://twitter.com/cravedcuddle"
-number_of_tweets_from_user = 5
-number_of_replies_from_each_thread = 5
+number_of_tweets_from_user = 3
+number_of_replies_from_each_thread = 3
 twitter = Twitter(link, number_of_tweets_from_user, number_of_replies_from_each_thread)
 twitter.main()
