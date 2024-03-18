@@ -100,6 +100,9 @@ class TwitterUser:
                 self.driver.execute_script('window.scrollBy(0, 200)', "")
                 articles = self.driver.find_elements(By.XPATH, xpath)
 
+                if len(links) == number_of_tweets:
+                    break
+
             if len(links) == number_of_tweets:
                 break
 
@@ -118,7 +121,7 @@ class TwitterUser:
 
         return name, username
     
-    def get_info_per_link(self, link: str, number_of_replies_from_each_thread: int) -> dict[tuple[str, str], tuple[str | None, str | None, str | None]]:
+    def get_info_per_link(self, link: str, number_of_replies_from_each_thread: int, link_counter: int) -> dict[tuple[str, str], tuple[str | None, str | None, str | None]]:
         self.driver.get(link)
         wait = WebDriverWait(self.driver, 10)
 
@@ -133,14 +136,22 @@ class TwitterUser:
 
         while True:
             for tweet in tweets:
-                print('-------')
+                print()
+                print('--------------------')
                 print('Counter: ', counter)
                 print(tweet)
-                print('-------')
+                print()
+                print(f'Link: {link_counter}', link)
+                print('--------------------')
                 print()
                 print('Finding username.')
-                user_tag = tweet.find_element(By.XPATH, "//div[@data-testid='User-Name']").text
-                name, username = self.get_username(user_tag)
+                # user_tag = tweet.find_element(By.XPATH, "//div[@data-testid='User-Name']").text
+                # name, username = self.get_username(user_tag)
+
+                name = tweet.find_element(By.CSS_SELECTOR, "[data-testid='User-Name'] div[class='css-1rynq56 r-bcqeeo r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-b88u0q r-1awozwy r-6koalj r-1udh08x r-3s2u2q'][style='text-overflow: unset; color: rgb(231, 233, 234);'] span[class='css-1qaijid r-bcqeeo r-qvutc0 r-poiln3']").text
+                username = tweet.find_element(By.CSS_SELECTOR, "[data-testid='User-Name'] div[class='css-1rynq56 r-dnmrzs r-1udh08x r-3s2u2q r-bcqeeo r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-16dba41 r-18u37iz r-1wvb978'][style='text-overflow: unset; color: rgb(113, 118, 123);'] span[class='css-1qaijid r-bcqeeo r-qvutc0 r-poiln3']").text
+                print(name, username)
+
 
                 sleep(1)
 
@@ -153,7 +164,7 @@ class TwitterUser:
                     print('Finding text.')
                     tweetText = tweet.find_element(By.CSS_SELECTOR, "[data-testid='tweetText'] span[style='text-overflow: unset;']").text
                     print(f'Text found: {tweetText}')
-                    sleep(2)
+                    sleep(1)
                 except:
                     tweetText = None
                     print('No text found.')
@@ -164,7 +175,7 @@ class TwitterUser:
                     tweetPhotoPath = tweet.find_element(By.CSS_SELECTOR, "[data-testid='tweetPhoto'] img[alt='Image'][draggable='true']")
                     tweetPhoto = tweetPhotoPath.get_attribute('src')
                     print(f'Tweet photo found: {tweetPhoto}')
-                    sleep(2)
+                    sleep(1)
                 except:
                     tweetPhoto = None
                     print('No photo found.')
@@ -175,7 +186,7 @@ class TwitterUser:
                     tweetVideoPath = tweet.find_element(By.CSS_SELECTOR, "[data-testid='videoComponent'] source[type='video/mp4']")
                     tweetVideo = tweetVideoPath.get_attribute('src')
                     print(f'Tweet video found: {tweetVideo}')
-                    sleep(2)
+                    sleep(1)
                     
                 except:
                     tweetVideo = None
