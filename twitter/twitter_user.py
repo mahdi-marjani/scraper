@@ -83,7 +83,7 @@ class TwitterUser:
         xpath = '//article[@data-testid="tweet"]'
         articles = self.driver.find_elements(By.XPATH, xpath)
 
-        counter = 0
+        counter = 1
 
         while True:
             for article in articles:
@@ -95,6 +95,9 @@ class TwitterUser:
                         links.append(link)
                         counter += 1
                         print(f'Link {counter}:', link)
+
+                    if len(links) == number_of_tweets:
+                        break
 
                 sleep(1)
                 self.driver.execute_script('window.scrollBy(0, 200)', "")
