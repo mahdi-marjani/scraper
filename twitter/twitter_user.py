@@ -111,8 +111,8 @@ class TwitterUser:
         index = user_tag.find('@')
         name = user_tag[:index-2] 
         username = user_tag[index:]
-
-        print()
+        
+        print('--------')
         print(name)
         print(username)
 
@@ -133,6 +133,12 @@ class TwitterUser:
 
         while True:
             for tweet in tweets:
+                print('-------')
+                print('Counter: ', counter)
+                print(tweet)
+                print('-------')
+                print()
+                print('Finding username.')
                 user_tag = tweet.find_element(By.XPATH, "//div[@data-testid='User-Name']").text
                 name, username = self.get_username(user_tag)
 
@@ -166,7 +172,7 @@ class TwitterUser:
                 try:
                     print()
                     print('Finding tweet video.')
-                    tweetVideoPath = tweet.find_element(By.XPATH, "//div[@data-testid='videoComponent']")
+                    tweetVideoPath = tweet.find_element(By.CSS_SELECTOR, "[data-testid='videoComponent'] source[type='video/mp4']")
                     tweetVideo = tweetVideoPath.get_attribute('src')
                     print(f'Tweet video found: {tweetVideo}')
                     sleep(2)
@@ -182,11 +188,10 @@ class TwitterUser:
                     print()
 
                     counter += 1
-                    
-                else:
-                    sleep(1)
-                    self.driver.execute_script('window.scrollBy(0, 500)', "")
-                    tweets = self.driver.find_elements(By.XPATH, xpath)
+
+                sleep(1)
+                self.driver.execute_script('window.scrollBy(0, 200)', "")
+                tweets = self.driver.find_elements(By.XPATH, xpath)
 
                 if number_of_replies_from_each_thread == counter:
                     break
