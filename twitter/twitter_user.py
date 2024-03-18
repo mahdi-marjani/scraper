@@ -112,6 +112,7 @@ class TwitterUser:
         name = user_tag[:index-2] 
         username = user_tag[index:]
 
+        print()
         print(name)
         print(username)
 
@@ -132,66 +133,60 @@ class TwitterUser:
 
         while True:
             for tweet in tweets:
+                user_tag = tweet.find_element(By.XPATH, "//div[@data-testid='User-Name']").text
+                name, username = self.get_username(user_tag)
+
+                sleep(1)
+
+                tweetText = None
+                tweetPhoto = None
+                tweetVideo = None
+
                 try:
-                    user_tag = tweet.find_element(By.XPATH, "//div[@data-testid='User-Name']").text
-                    name, username = self.get_username(user_tag)
-
-                    sleep(1)
-
+                    print()
+                    print('Finding text.')
+                    tweetText = tweet.find_element(By.CSS_SELECTOR, "[data-testid='tweetText'] span[style='text-overflow: unset;']").text
+                    print(f'Text found: {tweetText}')
+                    sleep(2)
+                except:
                     tweetText = None
+                    print('No text found.')
+
+                try:
+                    print()
+                    print('Finding tweet photo.')
+                    tweetPhotoPath = tweet.find_element(By.CSS_SELECTOR, "[data-testid='tweetPhoto'] img[alt='Image'][draggable='true']")
+                    tweetPhoto = tweetPhotoPath.get_attribute('src')
+                    print(f'Tweet photo found: {tweetPhoto}')
+                    sleep(2)
+                except:
                     tweetPhoto = None
+                    print('No photo found.')
+
+                try:
+                    print()
+                    print('Finding tweet video.')
+                    tweetVideoPath = tweet.find_element(By.XPATH, "//div[@data-testid='videoComponent']")
+                    tweetVideo = tweetVideoPath.get_attribute('src')
+                    print(f'Tweet video found: {tweetVideo}')
+                    sleep(2)
+                    
+                except:
                     tweetVideo = None
+                    print('No video found.')
 
-                    try:
-                        print()
-                        print('Finding text.')
-                        tweetText = tweet.find_element(By.XPATH, "//div[@data-testid='tweetText']").text
-                        print(f'Text found: {tweetText}')
-                        sleep(3)
+                if (name, username) not in users.keys(): 
+                    users[(name, username)] = (tweetText, tweetPhoto, tweetVideo)
+                    print()
+                    print(users)
+                    print()
 
-                    except:
-                        tweetText = None 
-                        print('No text found.')
-
-                    try:
-                        print()
-                        print('Finding tweet photo.')
-                        tweetPhotoPath = tweet.find_element(By.XPATH, "//img[contains(@src, 'twimg')]")
-                        tweetPhoto = tweetPhotoPath.get_attribute('src')
-                        print(f'Tweet photo found: {tweetPhoto}')
-                        sleep(3)
-        
-                    except:
-                        tweetPhoto = None 
-                        print('No photo found.')
-
-                    try:
-                        print()
-                        print('Finding tweet video.')
-                        tweetVideoPath = tweet.find_element(By.XPATH, "//div[@data-testid='videoComponent']")
-                        tweetVideo = tweetVideoPath.get_attribute('src')
-                        print(f'Tweet video found: {tweetVideo}')
-                        sleep(3)
-
-                    except:
-                        tweetVideo = None
-                        print('No video found.')
-
-                    if (name, username) not in users.keys(): 
-                        users[(name, username)] = (tweetText, tweetPhoto, tweetVideo)
-                        print()
-                        print(users)
-                        print()
-
-                        counter += 1
-                        
-                    else:
-                        sleep(1)
-                        self.driver.execute_script('window.scrollBy(0, 500)', "")
-                        tweets = self.driver.find_elements(By.XPATH, xpath)
-
-                except Exception as e:
-                    print(f"Error retrieving tweet details: {e}")
+                    counter += 1
+                    
+                else:
+                    sleep(1)
+                    self.driver.execute_script('window.scrollBy(0, 500)', "")
+                    tweets = self.driver.find_elements(By.XPATH, xpath)
 
                 if number_of_replies_from_each_thread == counter:
                     break
@@ -204,10 +199,3 @@ class TwitterUser:
         sleep(1)
 
         return users
-
-                
-
-    
-# data-testid="tweetText"
-# data-testid="tweetPhoto"
-# //div[@data-testid='User-Name']
