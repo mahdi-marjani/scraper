@@ -1,0 +1,2 @@
+selenium==4.17.0
+python_dotenv==1.0.1
