@@ -112,17 +112,6 @@ class TwitterUser:
         return links
 
     # ---------------- Tweeter Thread ----------------
-
-    def get_username(self, user_tag: str) -> tuple[str, str]:
-        index = user_tag.find('@')
-        name = user_tag[:index-2] 
-        username = user_tag[index:]
-        
-        print('--------')
-        print(name)
-        print(username)
-
-        return name, username
     
     def get_info_per_link(self, link: str, number_of_replies_from_each_thread: int, link_counter: int) -> dict[tuple[str, str], tuple[str | None, str | None, str | None]]:
         self.driver.get(link)
@@ -148,13 +137,10 @@ class TwitterUser:
                 print('--------------------')
                 print()
                 print('Finding username.')
-                # user_tag = tweet.find_element(By.XPATH, "//div[@data-testid='User-Name']").text
-                # name, username = self.get_username(user_tag)
 
                 name = tweet.find_element(By.CSS_SELECTOR, "[data-testid='User-Name'] div[class='css-1rynq56 r-bcqeeo r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-b88u0q r-1awozwy r-6koalj r-1udh08x r-3s2u2q'][style='text-overflow: unset; color: rgb(231, 233, 234);'] span[class='css-1qaijid r-bcqeeo r-qvutc0 r-poiln3']").text
                 username = tweet.find_element(By.CSS_SELECTOR, "[data-testid='User-Name'] div[class='css-1rynq56 r-dnmrzs r-1udh08x r-3s2u2q r-bcqeeo r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-16dba41 r-18u37iz r-1wvb978'][style='text-overflow: unset; color: rgb(113, 118, 123);'] span[class='css-1qaijid r-bcqeeo r-qvutc0 r-poiln3']").text
                 print(name, username)
-
 
                 sleep(1)
 
@@ -213,7 +199,6 @@ class TwitterUser:
             if number_of_replies_from_each_thread == counter:
                 break
             
-
         print(users)
         sleep(1)
 

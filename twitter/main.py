@@ -68,9 +68,7 @@ class Twitter:
         print()
         print()
 
-
-        print()
-        print()
+        
 
 
 link = "https://twitter.com/cravedcuddle"
