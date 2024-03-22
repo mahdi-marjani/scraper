@@ -11,6 +11,10 @@ from selenium.webdriver.common.by import By
 
 from time import sleep
 
+import requests
+
+import urllib.request
+
 class TwitterUser:
     def __init__(self, link: str) -> None:
         load_dotenv()
@@ -27,6 +31,9 @@ class TwitterUser:
 
         self.array = list()
         self.objects: dict[str, str] = {}
+
+        self.image_download_index: int = 0
+        self.video_download_index: int = 0
 
     # ---------------- Twitter User Info ----------------
 
@@ -83,7 +90,7 @@ class TwitterUser:
         xpath = '//article[@data-testid="tweet"]'
         articles = self.driver.find_elements(By.XPATH, xpath)
 
-        counter = 1
+        counter = 0
 
         while True:
             for article in articles:
@@ -113,6 +120,31 @@ class TwitterUser:
 
     # ---------------- Tweeter Thread ----------------
     
+    def download_photo(self, image_link: str, name: str, username: str) -> None:
+        folder_name = f'downloaded_images'
+
+        folder_path = os.path.join(os.getcwd(), folder_name)
+
+        image_name = f'{self.image_download_index}_{name}_{username}.jpg'
+
+        image_path = os.path.join(folder_path, image_name)
+        
+        response = requests.get(image_link)
+
+        with open(image_path, 'wb') as image_file:
+            image_file.write(response.content)
+        
+    def download_video(self, video_link: str, name: str, username: str) -> None:
+        folder_name = f'downloaded_images'
+
+        folder_path = os.path.join(os.getcwd(), folder_name)
+
+        video_name = f'{self.video_download_index}_{name}_{username}.jpg'
+
+        video_path = os.path.join(folder_path, video_name)
+
+        
+
     def get_info_per_link(self, link: str, number_of_replies_from_each_thread: int, link_counter: int) -> dict[tuple[str, str], tuple[str | None, str | None, str | None]]:
         self.driver.get(link)
         wait = WebDriverWait(self.driver, 10)
@@ -164,6 +196,11 @@ class TwitterUser:
                     tweetPhotoPath = tweet.find_element(By.CSS_SELECTOR, "[data-testid='tweetPhoto'] img[alt='Image'][draggable='true']")
                     tweetPhoto = tweetPhotoPath.get_attribute('src')
                     print(f'Tweet photo found: {tweetPhoto}')
+                    
+                    if tweetPhoto is not None:
+                        self.download_photo(tweetPhoto, name, username)
+                        self.image_download_index += 1
+
                     sleep(1)
                 except:
                     tweetPhoto = None
@@ -175,8 +212,12 @@ class TwitterUser:
                     tweetVideoPath = tweet.find_element(By.CSS_SELECTOR, "[data-testid='videoComponent'] source[type='video/mp4']")
                     tweetVideo = tweetVideoPath.get_attribute('src')
                     print(f'Tweet video found: {tweetVideo}')
+
+                    if tweetVideo is not None:
+                        self.download_video(tweetVideo, name, username)
+                        self.video_download_index += 1
+
                     sleep(1)
-                    
                 except:
                     tweetVideo = None
                     print('No video found.')

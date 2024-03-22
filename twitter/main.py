@@ -72,7 +72,7 @@ class Twitter:
 
 
 link = "https://twitter.com/cravedcuddle"
-number_of_tweets_from_user = 3
-number_of_replies_from_each_thread = 3
+number_of_tweets_from_user = 5
+number_of_replies_from_each_thread = 7
 twitter = Twitter(link, number_of_tweets_from_user, number_of_replies_from_each_thread)
 twitter.main()
