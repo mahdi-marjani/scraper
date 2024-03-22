@@ -13,7 +13,7 @@ PASSWORD="insert_your_password_here"
 scrapes:
  - name, username tag
  - tweet
- - photo/video link and downloads it
+ - photo/video link and downloads it by using yt-dlp
 
 ### instagram
 under construction
