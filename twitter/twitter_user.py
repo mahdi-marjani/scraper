@@ -15,6 +15,8 @@ import requests
 
 import urllib.request
 
+import yt_dlp
+
 class TwitterUser:
     def __init__(self, link: str) -> None:
         load_dotenv()
@@ -34,6 +36,9 @@ class TwitterUser:
 
         self.image_download_index: int = 0
         self.video_download_index: int = 0
+
+        self.visited_images_of_users: list[tuple[str, str]] = []
+        self.visited_videos_of_users: list[tuple[str, str]] = []
 
     # ---------------- Twitter User Info ----------------
 
@@ -135,15 +140,33 @@ class TwitterUser:
             image_file.write(response.content)
         
     def download_video(self, video_link: str, name: str, username: str) -> None:
-        folder_name = f'downloaded_images'
+        folder_name = f'downloaded_videos'
 
-        folder_path = os.path.join(os.getcwd(), folder_name)
+        # folder_path = os.path.join(os.getcwd(), folder_name)
 
-        video_name = f'{self.video_download_index}_{name}_{username}.jpg'
+        # video_name = f'{self.video_download_index}_{name}_{username}.jpg'
 
-        video_path = os.path.join(folder_path, video_name)
-
+        # video_path = os.path.join(folder_path, video_name)
         
+        extra_opts = {
+            'username': f'{self.USERNAME}',
+            'password': f'{self.PASSWORD}',
+        }
+
+        ydl_opts = {
+            'format': 'bestvideo+bestaudio/best',
+            'outtmpl': f'{folder_name}/{self.video_download_index}_{name}_{username}.%(ext)s',
+            'postprocessors': [{
+                'key': 'FFmpegVideoConvertor',
+                'preferedformat': 'mp4',
+            }],
+        }
+
+        ydl_opts.update(extra_opts)
+
+        ydl = yt_dlp.YoutubeDL(ydl_opts)
+        
+        ydl.download([video_link])
 
     def get_info_per_link(self, link: str, number_of_replies_from_each_thread: int, link_counter: int) -> dict[tuple[str, str], tuple[str | None, str | None, str | None]]:
         self.driver.get(link)
@@ -213,8 +236,12 @@ class TwitterUser:
                     tweetVideo = tweetVideoPath.get_attribute('src')
                     print(f'Tweet video found: {tweetVideo}')
 
-                    if tweetVideo is not None:
-                        self.download_video(tweetVideo, name, username)
+                    tweetLinkPath = tweet.find_element(By.CSS_SELECTOR, "[data-testid=User-Name] a[role=link][href*=status]")
+                    tweetLink = tweetLinkPath.get_attribute('href')
+                    print(f'Tweet link found: {tweetLink}')
+
+                    if tweetLink is not None:
+                        self.download_video(tweetLink, name, username)
                         self.video_download_index += 1
 
                     sleep(1)
