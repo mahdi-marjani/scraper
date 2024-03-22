@@ -15,5 +15,7 @@ scrapes:
  - tweet
  - photo/video link and downloads it by using yt-dlp
 
+still have a lot to do regarding user input, but all functionality works so far
+
 ### instagram
 under construction
