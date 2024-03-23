@@ -1,4 +1,3 @@
-from dotenv import load_dotenv
 import os
 
 from selenium import webdriver
@@ -19,9 +18,10 @@ import yt_dlp
 
 class TwitterUser:
     def __init__(self, link: str) -> None:
-        load_dotenv()
-        self.USERNAME: str = os.environ['NAME']
-        self.PASSWORD: str = os.environ['PASSWORD']
+        print()
+        print("[NOTICE: This is for authentication process in the scraping machine. I can't get your info from this.]")
+        self.USERNAME: str = input("Enter your twitter username: ")
+        self.PASSWORD: str = input("Enter your password: ")
 
         self.service = Service(executable_path='./geckodriver.exe')
         self.options = webdriver.FirefoxOptions()
@@ -141,12 +141,6 @@ class TwitterUser:
         
     def download_video(self, video_link: str, name: str, username: str) -> None:
         folder_name = f'downloaded_videos'
-
-        # folder_path = os.path.join(os.getcwd(), folder_name)
-
-        # video_name = f'{self.video_download_index}_{name}_{username}.jpg'
-
-        # video_path = os.path.join(folder_path, video_name)
         
         extra_opts = {
             'username': f'{self.USERNAME}',
@@ -180,6 +174,7 @@ class TwitterUser:
         tweets = self.driver.find_elements(By.XPATH, xpath)
         
         counter = 0
+        name_counter = 0
 
         while True:
             for tweet in tweets:
@@ -193,8 +188,21 @@ class TwitterUser:
                 print()
                 print('Finding username.')
 
-                name = tweet.find_element(By.CSS_SELECTOR, "[data-testid='User-Name'] div[class='css-1rynq56 r-bcqeeo r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-b88u0q r-1awozwy r-6koalj r-1udh08x r-3s2u2q'][style='text-overflow: unset; color: rgb(231, 233, 234);'] span[class='css-1qaijid r-bcqeeo r-qvutc0 r-poiln3']").text
-                username = tweet.find_element(By.CSS_SELECTOR, "[data-testid='User-Name'] div[class='css-1rynq56 r-dnmrzs r-1udh08x r-3s2u2q r-bcqeeo r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-16dba41 r-18u37iz r-1wvb978'][style='text-overflow: unset; color: rgb(113, 118, 123);'] span[class='css-1qaijid r-bcqeeo r-qvutc0 r-poiln3']").text
+                name = f'name_placeholder{name_counter}'
+
+                try:
+                    name = tweet.find_element(By.CSS_SELECTOR, "[data-testid='User-Name'] div[class='css-1rynq56 r-bcqeeo r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-b88u0q r-1awozwy r-6koalj r-1udh08x r-3s2u2q'][style='text-overflow: unset; color: rgb(231, 233, 234);'] span[class='css-1qaijid r-bcqeeo r-qvutc0 r-poiln3']").text
+                    username = tweet.find_element(By.CSS_SELECTOR, "[data-testid='User-Name'] div[class='css-1rynq56 r-dnmrzs r-1udh08x r-3s2u2q r-bcqeeo r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-16dba41 r-18u37iz r-1wvb978'][style='text-overflow: unset; color: rgb(113, 118, 123);'] span[class='css-1qaijid r-bcqeeo r-qvutc0 r-poiln3']").text
+                except:
+                    emoji_name = tweet.find_element(By.CSS_SELECTOR, "[data-testid='User-Name'] div[class='css-1rynq56 r-bcqeeo r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-b88u0q r-1awozwy r-6koalj r-1udh08x r-3s2u2q'][style='text-overflow: unset; color: rgb(231, 233, 234);'] span[class='css-1qaijid r-dnmrzs r-1udh08x r-3s2u2q r-bcqeeo r-qvutc0 r-poiln3'] img[class='r-4qtqp9 r-dflpy8 r-zw8f10 r-sjv1od r-10akycc r-h9hxbl']")
+                    name = emoji_name.get_attribute('src')
+
+                    if name is None:
+                        name = f'name_placeholder{name_counter}'
+                        name_counter += 1
+                        
+                    username = tweet.find_element(By.CSS_SELECTOR, "[data-testid='User-Name'] div[class='css-1rynq56 r-dnmrzs r-1udh08x r-3s2u2q r-bcqeeo r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-16dba41 r-18u37iz r-1wvb978'][style='text-overflow: unset; color: rgb(113, 118, 123);'] span[class='css-1qaijid r-bcqeeo r-qvutc0 r-poiln3']").text
+                
                 print(name, username)
 
                 sleep(1)
@@ -220,9 +228,12 @@ class TwitterUser:
                     tweetPhoto = tweetPhotoPath.get_attribute('src')
                     print(f'Tweet photo found: {tweetPhoto}')
 
-                    tweetLinkPath = tweet.find_element(By.CSS_SELECTOR, "[data-testid=User-Name] a[role=link][href*=status]")
-                    tweetLink = tweetLinkPath.get_attribute('href')
-                    print(f'Tweet link found: {tweetLink}')
+                    if self.objects['username'] != username:
+                        tweetLinkPath = tweet.find_element(By.CSS_SELECTOR, "[data-testid=User-Name] a[role=link][href*=status]")
+                        tweetLink = tweetLinkPath.get_attribute('href')
+                        print(f'Tweet link found: {tweetLink}')
+                    else:
+                        tweetLink = link
                     
                     if tweetPhoto is not None and tweetLink and (username, name, tweetLink) not in self.visited_images_of_users:
                         self.download_photo(tweetPhoto, name, username)
@@ -241,11 +252,14 @@ class TwitterUser:
                     tweetVideo = tweetVideoPath.get_attribute('src')
                     print(f'Tweet video found: {tweetVideo}')
 
-                    tweetLinkPath = tweet.find_element(By.CSS_SELECTOR, "[data-testid=User-Name] a[role=link][href*=status]")
-                    tweetLink = tweetLinkPath.get_attribute('href')
-                    print(f'Tweet link found: {tweetLink}')
-
-                    if tweetLink is not None and tweetLink and (username, name, tweetLink) not in self.visited_videos_of_users:
+                    if self.objects['username'] != username:
+                        tweetLinkPath = tweet.find_element(By.CSS_SELECTOR, "[data-testid=User-Name] a[role=link][href*=status]")
+                        tweetLink = tweetLinkPath.get_attribute('href')
+                        print(f'Tweet link found: {tweetLink}')
+                    else:
+                        tweetLink = link
+                    
+                    if tweetLink is not None and (username, name, tweetLink) not in self.visited_videos_of_users:
                         self.download_video(tweetLink, name, username)
                         self.video_download_index += 1
                         self.visited_videos_of_users.append((username, name, tweetLink))
