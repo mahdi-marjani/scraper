@@ -3,10 +3,10 @@ from twitter_user import TwitterUser
 from time import sleep
 
 class Twitter:
-    def __init__(self, link: str, number_of_tweets_from_user: int, number_of_replies_from_each_thread: int) -> None:
-        self.twitter_user = TwitterUser(link)    
-        self.number_of_tweets_from_user = number_of_tweets_from_user
-        self.number_of_replies_from_each_thread = number_of_replies_from_each_thread
+    def __init__(self, link) -> None:
+        self.twitter_user = TwitterUser(link)   
+        self.number_of_tweets_from_user: int = int(input("Enter number of tweets you want to scrape from this user page: "))
+        self.number_of_replies_from_each_thread: int = int(input("Enter number of replies you want to scrape per tweet: "))
 
     def main(self) -> None:
         print()
@@ -48,8 +48,6 @@ class Twitter:
         print()
         print()
 
-        # print(links)
-
         all_info: dict[str, dict[tuple[str, str], tuple[str | None, str | None, str | None]]] = dict() 
 
         link_counter: int = 1
@@ -63,16 +61,15 @@ class Twitter:
         print()
         print()
         print('-------------------------------------------------------------------------------')
-        print(all_info)
+        for url, data in all_info.items():
+            print(f'URL: {url}')
+            for key, value in data.items():
+                print(f'\t{key}: {value}')
         print('-------------------------------------------------------------------------------')
         print()
         print()
 
-        
-
-
-link = "https://twitter.com/cravedcuddle"
-number_of_tweets_from_user = 5
-number_of_replies_from_each_thread = 7
-twitter = Twitter(link, number_of_tweets_from_user, number_of_replies_from_each_thread)
+print()
+link = input("Enter the link of the user page you want to scrape: ")
+twitter = Twitter(link)
 twitter.main()
