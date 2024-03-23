@@ -37,8 +37,8 @@ class TwitterUser:
         self.image_download_index: int = 0
         self.video_download_index: int = 0
 
-        self.visited_images_of_users: list[tuple[str, str]] = []
-        self.visited_videos_of_users: list[tuple[str, str]] = []
+        self.visited_images_of_users: list[tuple[str, str, str]] = []
+        self.visited_videos_of_users: list[tuple[str, str, str]] = []
 
     # ---------------- Twitter User Info ----------------
 
@@ -219,10 +219,15 @@ class TwitterUser:
                     tweetPhotoPath = tweet.find_element(By.CSS_SELECTOR, "[data-testid='tweetPhoto'] img[alt='Image'][draggable='true']")
                     tweetPhoto = tweetPhotoPath.get_attribute('src')
                     print(f'Tweet photo found: {tweetPhoto}')
+
+                    tweetLinkPath = tweet.find_element(By.CSS_SELECTOR, "[data-testid=User-Name] a[role=link][href*=status]")
+                    tweetLink = tweetLinkPath.get_attribute('href')
+                    print(f'Tweet link found: {tweetLink}')
                     
-                    if tweetPhoto is not None:
+                    if tweetPhoto is not None and tweetLink and (username, name, tweetLink) not in self.visited_images_of_users:
                         self.download_photo(tweetPhoto, name, username)
                         self.image_download_index += 1
+                        self.visited_images_of_users.append((username, name, tweetLink))
 
                     sleep(1)
                 except:
@@ -240,9 +245,10 @@ class TwitterUser:
                     tweetLink = tweetLinkPath.get_attribute('href')
                     print(f'Tweet link found: {tweetLink}')
 
-                    if tweetLink is not None:
+                    if tweetLink is not None and tweetLink and (username, name, tweetLink) not in self.visited_videos_of_users:
                         self.download_video(tweetLink, name, username)
                         self.video_download_index += 1
+                        self.visited_videos_of_users.append((username, name, tweetLink))
 
                     sleep(1)
                 except:
