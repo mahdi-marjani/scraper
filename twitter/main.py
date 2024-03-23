@@ -48,7 +48,7 @@ class Twitter:
         print()
         print()
 
-        print(links)
+        # print(links)
 
         all_info: dict[str, dict[tuple[str, str], tuple[str | None, str | None, str | None]]] = dict() 
 
