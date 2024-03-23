@@ -6,7 +6,7 @@ scraping twitter and instagram using selenium
 Scrapes the following:
  - Name, @Username tag
  - Tweet Text
- - Photo/Video link and downloads it by using [yt-dlp]([url](https://github.com/yt-dlp/yt-dlp)) (I can add a download option)
+ - Photo/Video link and downloads it by using [yt-dlp]([url]https://github.com/yt-dlp/yt-dlpa) (I can add a download option)
 
 
 Still have a lot to do regarding user input and , but all functionality works so far
