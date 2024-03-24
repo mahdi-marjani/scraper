@@ -1,7 +1,6 @@
 import os
 import yt_dlp
 import requests
-import urllib.request
 from time import sleep
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -23,8 +22,8 @@ class TwitterUser:
         self.driver = webdriver.Firefox(service=self.service, options=self.options)
         self.driver.maximize_window()
 
-        self.insta_url: str = link
-        self.driver.get(self.insta_url)
+        self.twitter_url: str = link  
+        self.driver.get(self.twitter_url)
 
         self.array = list()
         self.objects: dict[str, str] = {}
