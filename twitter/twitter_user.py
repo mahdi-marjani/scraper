@@ -210,6 +210,7 @@ class TwitterUser:
                     except:
                         number_of_replies = 0
 
+                # Name, Username
                 try:
                     name = tweet.find_element(By.CSS_SELECTOR, "[data-testid='User-Name'] div[class='css-1rynq56 r-bcqeeo r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-b88u0q r-1awozwy r-6koalj r-1udh08x r-3s2u2q'][style='text-overflow: unset; color: rgb(231, 233, 234);'] span[class='css-1qaijid r-bcqeeo r-qvutc0 r-poiln3']").text
                     username = tweet.find_element(By.CSS_SELECTOR, "[data-testid='User-Name'] div[class='css-1rynq56 r-dnmrzs r-1udh08x r-3s2u2q r-bcqeeo r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-16dba41 r-18u37iz r-1wvb978'][style='text-overflow: unset; color: rgb(113, 118, 123);'] span[class='css-1qaijid r-bcqeeo r-qvutc0 r-poiln3']").text
@@ -232,6 +233,8 @@ class TwitterUser:
                 tweetVideo = None
                 tweetCardWrapper = None
 
+
+                # Tweet Text
                 try:
                     print()
                     print('Finding text.')
@@ -245,6 +248,7 @@ class TwitterUser:
 
 
 
+                # Tweet Photo
                 try:
                     print()
                     print('Finding tweet photo.')
@@ -286,8 +290,7 @@ class TwitterUser:
 
 
 
-
-
+                # Tweet Video
                 try:
                     print()
                     print('Finding tweet video.')
@@ -319,6 +322,7 @@ class TwitterUser:
 
 
 
+                # Tweet Card Wrapper
                 try:
                     print()
                     print('Finding other than text, image, and video.')
