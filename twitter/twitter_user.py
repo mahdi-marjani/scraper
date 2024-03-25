@@ -276,7 +276,7 @@ class TwitterUser:
                         for photo in tweetPhotoList:
                             self.download_photo(photo, name, username)
                         
-                        self.image_download_index += 1
+                            self.image_download_index += 1
                         self.visited_images_of_users.append((username, name, tweetLink))
 
                     sleep(1)
