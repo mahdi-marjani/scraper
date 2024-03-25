@@ -103,7 +103,6 @@ class TwitterUser:
         counter = 0
 
         while True:
-            print(len(articles))
             for article in articles:
                 hrefs = wait.until(ec.presence_of_all_elements_located((By.CSS_SELECTOR, '[data-testid=User-Name] a[role=link][href*=status]')))
             
@@ -350,6 +349,10 @@ class TwitterUser:
         print('End of tweet thread.')
         print(users)
         print('____________________________')
+        print()
+        print()
+        print()
+
         sleep(1)
 
         return users
