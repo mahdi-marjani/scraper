@@ -23,6 +23,8 @@ class TwitterUser:
         print()
         self.USERNAME: str = input("Enter your twitter username: ")
         self.PASSWORD: str = input("Enter your password: ")
+        self.number_of_tweets_from_user: int = int(input("Enter number of tweets you want to scrape from this user page: "))
+        self.number_of_replies_from_each_thread: int = int(input("Enter number of replies you want to scrape per tweet: "))
 
         self.service = Service(executable_path='./geckodriver.exe')
         self.options = webdriver.FirefoxOptions()
@@ -93,7 +95,7 @@ class TwitterUser:
         
         print("Description:", description)
 
-    def get_tweets(self, number_of_tweets: int) -> list[str]:
+    def get_tweets(self) -> list[str]:
         links = []
         wait = WebDriverWait(self.driver, 10)
 
@@ -108,22 +110,22 @@ class TwitterUser:
             
                 for href in hrefs:
                     link = href.get_attribute('href')
-                    if link not in links and len(links) < number_of_tweets + 1:
+                    if link not in links and len(links) < self.number_of_tweets_from_user + 1:
                         links.append(link)
                         counter += 1
                         print(f'Link {counter}:', link)
 
-                    if len(links) == number_of_tweets:
+                    if len(links) == self.number_of_tweets_from_user:
                         break
 
                 sleep(1)
                 self.driver.execute_script('window.scrollBy(0, 200)', "")
                 articles = self.driver.find_elements(By.XPATH, xpath)
 
-                if len(links) == number_of_tweets:
+                if len(links) == self.number_of_tweets_from_user:
                     break
 
-            if len(links) == number_of_tweets:
+            if len(links) == self.number_of_tweets_from_user:
                 break
 
         return links
@@ -167,7 +169,7 @@ class TwitterUser:
         
         ydl.download([video_link])
 
-    def get_info_per_link(self, link: str, number_of_replies_from_each_thread: int, link_counter: int) -> dict[tuple[str, str], list[tuple[str | None, str | None, str | None, str | None]]]:
+    def get_info_per_link(self, link: str, link_counter: int) -> dict[tuple[str, str], list[tuple[str | None, str | None, str | None, str | None]]]:
         self.driver.get(link)
         wait = WebDriverWait(self.driver, 10)
 
@@ -182,6 +184,9 @@ class TwitterUser:
         name_counter = 0
 
         while True:
+            if link_counter <= 0:
+                break
+
             for tweet in tweets:
                 print()
                 print('________________________')
@@ -336,10 +341,10 @@ class TwitterUser:
                 self.driver.execute_script('window.scrollBy(0, 200)', "")
                 tweets = self.driver.find_elements(By.XPATH, xpath)
 
-                if number_of_replies_from_each_thread == counter:
+                if self.number_of_replies_from_each_thread == counter:
                     break
 
-            if number_of_replies_from_each_thread == counter:
+            if self.number_of_replies_from_each_thread == counter:
                 break
             
         print('____________________________')
@@ -354,3 +359,6 @@ class TwitterUser:
         sleep(1)
 
         return users
+    
+    def quit_browser(self) -> None:
+        self.driver.close()
