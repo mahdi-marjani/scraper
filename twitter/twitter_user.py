@@ -13,6 +13,8 @@ import requests
 
 import yt_dlp
 
+from getpass import getpass
+
 class TwitterUser:
     def __init__(self, link: str) -> None:
         print()
@@ -22,7 +24,7 @@ class TwitterUser:
         print('_______________________________________________________________________________________________________')
         print()
         self.USERNAME: str = input("Enter your twitter username: ")
-        self.PASSWORD: str = input("Enter your password: ")
+        self.PASSWORD: str = getpass("Enter your password: ")
         self.number_of_tweets_from_user: int = int(input("Enter number of tweets you want to scrape from this user page: "))
         self.number_of_replies_from_each_thread: int = int(input("Enter number of replies you want to scrape per tweet: "))
 
