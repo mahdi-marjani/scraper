@@ -12,7 +12,7 @@ Scrapes the following:
    - Card Wrapper Link
   
 Usage:
-Open the terminal and go to the directory of your choice.
+Open the terminal and enter the following line by line.
 ```
 cd Downloads/
 git clone https://github.com/meezlung/scraper.git
@@ -21,8 +21,6 @@ python main.py
 ```
 
 Once the program runs, input the following information you want.
-
-Still have a lot to do regarding user input and error handling checker, but all functionality works so far
 
 
 
