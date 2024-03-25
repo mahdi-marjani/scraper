@@ -320,7 +320,6 @@ class TwitterUser:
                 if ((name, username)) in users.keys() and (tweetText, tweetPhoto, tweetVideo, tweetCardWrapper) not in users[(name, username)]:
                     users[(name, username)].append((tweetText, tweetPhoto, tweetVideo, tweetCardWrapper))
                     print()
-                    # print(users)
                     print()
 
                     counter += 1
@@ -328,7 +327,6 @@ class TwitterUser:
                 elif (name, username) not in users.keys():
                     users[(name, username)] = [(tweetText, tweetPhoto, tweetVideo, tweetCardWrapper)]
                     print()
-                    # print(users)
                     print()
 
                     counter += 1
