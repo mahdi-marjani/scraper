@@ -10,8 +10,21 @@ Scrapes the following:
    - Tweet Text
    - Photo/Video link and downloads it by using **[yt-dlp](https://github.com/yt-dlp/yt-dlpa)** (I can add a do not download option)
    - Card Wrapper Link
+  
+Usage:
+Open the terminal and go to the directory of your choice.
+```
+cd Downloads/
+git clone https://github.com/meezlung/scraper.git
+cd Scraper/twitter/
+python main.py
+```
+
+Once the program runs, input the following information you want.
 
 Still have a lot to do regarding user input and error handling checker, but all functionality works so far
+
+
 
 ### instagram
 under construction
