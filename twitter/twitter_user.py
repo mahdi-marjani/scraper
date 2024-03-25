@@ -1,14 +1,17 @@
 import os
-import yt_dlp
-import requests
-from time import sleep
+
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.service import Service
-from webdriver_manager.firefox import GeckoDriverManager
+
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
-from selenium.webdriver.support.event_firing_webdriver import EventFiringWebDriver, EventFiringWebElement
+from selenium.webdriver.common.by import By
+
+from time import sleep
+
+import requests
+
+import yt_dlp
 
 class TwitterUser:
     def __init__(self, link: str) -> None:
@@ -17,7 +20,7 @@ class TwitterUser:
         self.USERNAME: str = input("Enter your twitter username: ")
         self.PASSWORD: str = input("Enter your password: ")
 
-        self.service = Service(GeckoDriverManager().install())
+        self.service = Service(executable_path='./geckodriver.exe')
         self.options = webdriver.FirefoxOptions()
         self.driver = webdriver.Firefox(service=self.service, options=self.options)
         self.driver.maximize_window()
