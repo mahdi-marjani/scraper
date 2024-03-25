@@ -14,12 +14,14 @@ class Twitter:
 
         sleep(3)
 
-        self.twitter_user.press_login_button()
+        try:
+            self.twitter_user.press_login_button()
+            sleep(3)
+            self.twitter_user.login_username()
+
+        except:
+            self.twitter_user.login_username()
         
-        sleep(3)
-
-        self.twitter_user.login_username()
-
         sleep(1)
 
         self.twitter_user.press_next()
@@ -48,7 +50,7 @@ class Twitter:
         print()
         print()
 
-        all_info: dict[str, dict[tuple[str, str], tuple[str | None, str | None, str | None]]] = dict() 
+        all_info: dict[str, dict[tuple[str, str], list[tuple[str | None, str | None, str | None, str | None]]]] = dict() 
 
         link_counter: int = 1
 
@@ -60,12 +62,25 @@ class Twitter:
 
         print()
         print()
+        print()
+        print()
+        print()
+        print(f'SUMMARIZED INFORMATION FROM THE {self.number_of_tweets_from_user} TWEETS OF THE USER PAGE:')
         print('-------------------------------------------------------------------------------')
         for url, data in all_info.items():
-            print(f'URL: {url}')
+            print()
+            print()
+            print()
+            print()
+            url_string = f'URL: {url}'
+            print(url_string)
             for key, value in data.items():
-                print(f'\t{key}: {value}')
-        print('-------------------------------------------------------------------------------')
+                print()
+                print(f'    {key}: {value}')
+            print('_' * len(url_string))
+        print()
+        print()
+        print()
         print()
         print()
 
