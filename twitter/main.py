@@ -5,8 +5,7 @@ from time import sleep
 class Twitter:
     def __init__(self, link) -> None:
         self.twitter_user = TwitterUser(link)   
-        self.number_of_tweets_from_user: int = int(input("Enter number of tweets you want to scrape from this user page: "))
-        self.number_of_replies_from_each_thread: int = int(input("Enter number of replies you want to scrape per tweet: "))
+
 
     def main(self) -> None:
         print()
@@ -41,9 +40,9 @@ class Twitter:
         print()
         print()
 
-        sleep(3)
+        sleep(5)
 
-        links = self.twitter_user.get_tweets(self.number_of_tweets_from_user)
+        links = self.twitter_user.get_tweets()
 
         sleep(1)
 
@@ -55,7 +54,7 @@ class Twitter:
         link_counter: int = 1
 
         for link in links:
-            info = self.twitter_user.get_info_per_link(link, self.number_of_replies_from_each_thread, link_counter)
+            info = self.twitter_user.get_info_per_link(link, link_counter)
             all_info[link] = info
 
             link_counter += 1
@@ -65,7 +64,7 @@ class Twitter:
         print()
         print()
         print()
-        print(f'SUMMARIZED INFORMATION FROM THE {self.number_of_tweets_from_user} TWEETS OF THE USER PAGE:')
+        print(f'SUMMARIZED INFORMATION FROM THE {self.twitter_user.number_of_tweets_from_user} TWEETS OF THE USER PAGE:')
         for url, data in all_info.items():
             print()
             print()
@@ -96,15 +95,15 @@ class Twitter:
                     print(f'        {info[3]}')
                     print()
                     print()
-                    print()
 
-                
             print('_' * len(url_string))
         print()
         print()
         print()
         print()
         print()
+
+        self.twitter_user.quit_browser()
 
 print()
 link = input("Enter the link of the user page you want to scrape: ")
