@@ -21,8 +21,7 @@ python main.py
 ```
 
 Once the program runs, input the following information you want.
+<br></br>
 
-
-
-### instagram
+## instagram
 under construction
