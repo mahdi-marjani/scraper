@@ -48,6 +48,8 @@ class TwitterUser:
 
         self.visited_cardwrapper_of_users: list[tuple[str, str, str]] = []
 
+        self.repeated_loop: int = 0
+
 
     # ---------------- Twitter User Info ----------------
 
@@ -106,7 +108,7 @@ class TwitterUser:
 
         counter = 0
 
-        while True:
+        while articles:
             for article in articles:
                 hrefs = wait.until(ec.presence_of_all_elements_located((By.CSS_SELECTOR, '[data-testid=User-Name] a[role=link][href*=status]')))
             
@@ -171,29 +173,29 @@ class TwitterUser:
         
         ydl.download([video_link])
 
-    def get_info_per_link(self, link: str, link_counter: int) -> dict[tuple[str, str], list[tuple[str | None, str | None, str | None, str | None]]]:
+    def get_info_per_link(self, link: str, link_counter: int) -> dict[tuple[str, str], list[tuple[str | None, list[str] | None, str | None, str | None]]]:
         self.driver.get(link)
         wait = WebDriverWait(self.driver, 10)
 
-        users: dict[tuple[str, str], list[tuple[str | None, str | None, str | None, str | None]]] = dict()
+        users: dict[tuple[str, str], list[tuple[str | None, list[str] | None, str | None, str | None]]] = dict()
 
         sleep(5)
 
         xpath = '//article[@data-testid="tweet"]'
         tweets = self.driver.find_elements(By.XPATH, xpath)
         
+        number_of_replies = -1
         counter = 0
         name_counter = 0
 
         while True:
-            if link_counter <= 0:
-                break
-
             for tweet in tweets:
                 print()
                 print('________________________')
                 print()
                 print('Counter: ', counter)
+                print('Image Counter:', self.image_download_index)
+                print('Number of Replies:', number_of_replies)
                 print()
                 print(f'Link: {link_counter}', link)
                 print('________________________')
@@ -201,6 +203,12 @@ class TwitterUser:
                 print('Finding username.')
 
                 name = f'name_placeholder{name_counter}'
+
+                if counter == 0:
+                    try:
+                        number_of_replies = int(tweet.find_element(By.CSS_SELECTOR, "[data-testid='reply'] span[style='text-overflow: unset;']").text)
+                    except:
+                        number_of_replies = 0
 
                 try:
                     name = tweet.find_element(By.CSS_SELECTOR, "[data-testid='User-Name'] div[class='css-1rynq56 r-bcqeeo r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-b88u0q r-1awozwy r-6koalj r-1udh08x r-3s2u2q'][style='text-overflow: unset; color: rgb(231, 233, 234);'] span[class='css-1qaijid r-bcqeeo r-qvutc0 r-poiln3']").text
@@ -220,7 +228,7 @@ class TwitterUser:
                 sleep(1)
 
                 tweetText = None
-                tweetPhoto = None
+                tweetPhotoList = []
                 tweetVideo = None
                 tweetCardWrapper = None
 
@@ -240,30 +248,42 @@ class TwitterUser:
                 try:
                     print()
                     print('Finding tweet photo.')
-                    tweetPhotoPath = tweet.find_element(By.CSS_SELECTOR, "[data-testid='tweetPhoto'] img[alt='Image'][draggable='true']")
-                    tweetPhoto = tweetPhotoPath.get_attribute('src')
-                    print(f'Tweet photo found: {tweetPhoto}')
-  
+                    tweetPhotoPath = tweet.find_elements(By.CSS_SELECTOR, "[data-testid='tweetPhoto'] img[alt='Image'][draggable='true']")
+
+                    for tweetPhoto in tweetPhotoPath:
+                        photo = tweetPhoto.get_attribute('src')
+
+                        if photo:
+                            tweetPhotoList.append(photo)
+
+                    if tweetPhotoList:
+                        print(f'Tweet photo found: {tweetPhotoList}')  
+                    else:
+                        raise Exception
 
                     try:
-                        if self.objects['username'] != username:
+                        if counter > 0:
                             tweetLinkPath = tweet.find_element(By.CSS_SELECTOR, "[data-testid=User-Name] a[role=link][href*=status]")
                             tweetLink = tweetLinkPath.get_attribute('href')
                             print(f'Tweet link found: {tweetLink}')
                         else:
                             tweetLink = link
+
                     except:
                         tweetLink = link
-                    
-                    if tweetPhoto is not None and tweetLink and (username, name, tweetLink) not in self.visited_images_of_users:
-                        self.download_photo(tweetPhoto, name, username)
+
+                    if tweetPhotoList is not None and tweetLink and (username, name, tweetLink) not in self.visited_images_of_users:
+                        for photo in tweetPhotoList:
+                            self.download_photo(photo, name, username)
+                        
                         self.image_download_index += 1
                         self.visited_images_of_users.append((username, name, tweetLink))
 
                     sleep(1)
                 except:
-                    tweetPhoto = None
+                    tweetPhotoList = None
                     print('No photo found.')
+
 
 
 
@@ -276,14 +296,16 @@ class TwitterUser:
                     print(f'Tweet video found: {tweetVideo}')
 
                     try:
-                        if self.objects['username'] != username:
+                        if counter > 0 :
                             tweetLinkPath = tweet.find_element(By.CSS_SELECTOR, "[data-testid=User-Name] a[role=link][href*=status]")
                             tweetLink = tweetLinkPath.get_attribute('href')
                             print(f'Tweet link found: {tweetLink}')
                         else:
                             tweetLink = link
+                            
                     except:
                         tweetLink = link
+
                     
                     if tweetLink is not None and (username, name, tweetLink) not in self.visited_videos_of_users:
                         self.download_video(tweetLink, name, username)
@@ -295,7 +317,7 @@ class TwitterUser:
                     tweetVideo = None
                     print('No video found.')
 
-                
+
 
                 try:
                     print()
@@ -305,14 +327,18 @@ class TwitterUser:
                     print(f'Card wrapper image found: {tweetCardWrapper}')
 
                     try:
-                        if self.objects['username'] != username:
+                        if counter > 0:
                             tweetLinkPath = tweet.find_element(By.CSS_SELECTOR, "[data-testid=User-Name] a[role=link][href*=status]")
                             tweetLink = tweetLinkPath.get_attribute('href')
                             print(f'Tweet link found: {tweetLink}')
                         else:
                             tweetLink = link
+
+
                     except:
                         tweetLink = link
+
+
 
                     if tweetLink is not None and (username, name, tweetLink) not in self.visited_cardwrapper_of_users:
                         self.visited_cardwrapper_of_users.append((username, name, tweetLink))
@@ -324,15 +350,15 @@ class TwitterUser:
 
 
 
-                if ((name, username)) in users.keys() and (tweetText, tweetPhoto, tweetVideo, tweetCardWrapper) not in users[(name, username)]:
-                    users[(name, username)].append((tweetText, tweetPhoto, tweetVideo, tweetCardWrapper))
+                if ((name, username)) in users.keys() and (tweetText, tweetPhotoList, tweetVideo, tweetCardWrapper) not in users[(name, username)]:
+                    users[(name, username)].append((tweetText, tweetPhotoList, tweetVideo, tweetCardWrapper))
                     print()
                     print()
 
                     counter += 1
 
                 elif (name, username) not in users.keys():
-                    users[(name, username)] = [(tweetText, tweetPhoto, tweetVideo, tweetCardWrapper)]
+                    users[(name, username)] = [(tweetText, tweetPhotoList, tweetVideo, tweetCardWrapper)]
                     print()
                     print()
 
@@ -346,8 +372,15 @@ class TwitterUser:
                 if self.number_of_replies_from_each_thread == counter:
                     break
 
+                elif number_of_replies == counter - 1:
+                    break
+
             if self.number_of_replies_from_each_thread == counter:
                 break
+                
+            elif number_of_replies == counter - 1:
+                break
+
             
         print('____________________________')
         print()
