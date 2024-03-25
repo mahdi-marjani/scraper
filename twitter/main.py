@@ -66,17 +66,39 @@ class Twitter:
         print()
         print()
         print(f'SUMMARIZED INFORMATION FROM THE {self.number_of_tweets_from_user} TWEETS OF THE USER PAGE:')
-        print('-------------------------------------------------------------------------------')
         for url, data in all_info.items():
             print()
             print()
             print()
             print()
             url_string = f'URL: {url}'
+            print('_' * len(url_string))
+            print()
             print(url_string)
             for key, value in data.items():
                 print()
-                print(f'    {key}: {value}')
+                print(f'    {key}')
+
+                for info in value:
+                    print('        Tweet Text:')
+                    print(f'        {info[0]}')
+                    print()
+
+                    print('        Tweet Photo Link:')
+                    print(f'        {info[1]}')
+                    print()
+
+                    print('        Tweet Video Link:')
+                    print(f'        {info[2]}')
+                    print()
+
+                    print('        Card Wrapper Link:')
+                    print(f'        {info[3]}')
+                    print()
+                    print()
+                    print()
+
+                
             print('_' * len(url_string))
         print()
         print()
