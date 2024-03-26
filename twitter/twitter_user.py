@@ -238,7 +238,7 @@ class TwitterUser:
                 try:
                     print()
                     print('Finding text.')
-                    tweetText = tweet.find_element(By.CSS_SELECTOR, "[data-testid='tweetText'] span[style='text-overflow: unset;']").text
+                    tweetText = tweet.find_element(By.CSS_SELECTOR, "[data-testid='tweetText']").text
                     print(f'Text found: \n{tweetText}')
                     sleep(1)
                         
