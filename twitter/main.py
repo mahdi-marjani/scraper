@@ -49,7 +49,7 @@ class Twitter:
         print()
         print()
 
-        all_info: dict[str, dict[tuple[str, str], list[tuple[str | None, list[str] | None, str | None, str | None]]]] = dict() 
+        all_info: dict[str, dict[tuple[str, str], list[tuple[str | None, list[str] | None, list[str] | None, str | None]]]] = dict() 
 
         link_counter: int = 1
 
