@@ -64,12 +64,9 @@ class Twitter:
         print()
         print()
         print()
-        print(f'SUMMARIZED INFORMATION FROM THE {self.twitter_user.number_of_tweets_from_user} TWEETS OF THE USER PAGE:')
+        print(f'Compiled information from the {self.twitter_user.number_of_tweets_from_user} tweets of the user page:')
+        print()
         for url, data in all_info.items():
-            print()
-            print()
-            print()
-            print()
             url_string = f'URL: {url}'
             print('_' * len(url_string))
             print()
@@ -96,7 +93,13 @@ class Twitter:
                     print()
                     print()
 
+
             print('_' * len(url_string))
+            
+            print()
+            print()
+            print()
+            print()
         print()
         print()
         print()
