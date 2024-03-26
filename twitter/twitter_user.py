@@ -160,7 +160,7 @@ class TwitterUser:
 
         ydl_opts = {
             'format': 'bestvideo+bestaudio/best',
-            'outtmpl': f'{folder_name}/{self.video_download_index}_{name}_{username}.%(ext)s',
+            'outtmpl': f'{folder_name}/%(title)s.%(ext)s',
             'postprocessors': [{
                 'key': 'FFmpegVideoConvertor',
                 'preferedformat': 'mp4',
@@ -173,11 +173,11 @@ class TwitterUser:
         
         ydl.download([video_link])
 
-    def get_info_per_link(self, link: str, link_counter: int) -> dict[tuple[str, str], list[tuple[str | None, list[str] | None, str | None, str | None]]]:
+    def get_info_per_link(self, link: str, link_counter: int) -> dict[tuple[str, str], list[tuple[str | None, list[str] | None, list[str] | None, str | None]]]:
         self.driver.get(link)
         wait = WebDriverWait(self.driver, 10)
 
-        users: dict[tuple[str, str], list[tuple[str | None, list[str] | None, str | None, str | None]]] = dict()
+        users: dict[tuple[str, str], list[tuple[str | None, list[str] | None, list[str] | None, str | None]]] = dict()
 
         sleep(5)
 
@@ -228,10 +228,10 @@ class TwitterUser:
 
                 sleep(1)
 
-                tweetText = None
-                tweetPhotoList = []
-                tweetVideo = None
-                tweetCardWrapper = None
+                tweetText: str | None = None
+                tweetPhotoList: list[str] | None = []
+                tweetVideoList: list[str] | None = []
+                tweetCardWrapper: str | None = None
 
 
                 # Tweet Text
@@ -294,9 +294,18 @@ class TwitterUser:
                 try:
                     print()
                     print('Finding tweet video.')
-                    tweetVideoPath = tweet.find_element(By.CSS_SELECTOR, "[data-testid='videoComponent'] source[type='video/mp4']")
-                    tweetVideo = tweetVideoPath.get_attribute('src')
-                    print(f'Tweet video found: {tweetVideo}')
+                    tweetVideoPath = tweet.find_elements(By.CSS_SELECTOR, "[data-testid='videoComponent'] source[type='video/mp4']")
+
+                    for tweetVideo in tweetVideoPath:
+                        video = tweetVideo.get_attribute('src')
+
+                        if video:
+                            tweetVideoList.append(video)
+
+                    if tweetVideoList:
+                        print(f'Tweet video found: {tweetVideoList}')
+                    else:
+                        raise Exception
 
                     try:
                         if counter > 0 :
@@ -310,14 +319,14 @@ class TwitterUser:
                         tweetLink = link
 
                     
-                    if tweetLink is not None and (username, name, tweetLink) not in self.visited_videos_of_users:
+                    if tweetVideoList is not None and tweetLink and (username, name, tweetLink) not in self.visited_videos_of_users:                      
                         self.download_video(tweetLink, name, username)
                         self.video_download_index += 1
                         self.visited_videos_of_users.append((username, name, tweetLink))
 
                     sleep(1)
                 except:
-                    tweetVideo = None
+                    tweetVideoList = None
                     print('No video found.')
 
 
@@ -354,15 +363,15 @@ class TwitterUser:
 
 
 
-                if ((name, username)) in users.keys() and (tweetText, tweetPhotoList, tweetVideo, tweetCardWrapper) not in users[(name, username)]:
-                    users[(name, username)].append((tweetText, tweetPhotoList, tweetVideo, tweetCardWrapper))
+                if ((name, username)) in users.keys() and (tweetText, tweetPhotoList, tweetVideoList, tweetCardWrapper) not in users[(name, username)]:
+                    users[(name, username)].append((tweetText, tweetPhotoList, tweetVideoList, tweetCardWrapper))
                     print()
                     print()
 
                     counter += 1
 
                 elif (name, username) not in users.keys():
-                    users[(name, username)] = [(tweetText, tweetPhotoList, tweetVideo, tweetCardWrapper)]
+                    users[(name, username)] = [(tweetText, tweetPhotoList, tweetVideoList, tweetCardWrapper)]
                     print()
                     print()
 
