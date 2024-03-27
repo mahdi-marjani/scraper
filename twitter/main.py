@@ -73,7 +73,7 @@ class Twitter:
             print(url_string)
             for key, value in data.items():
                 print()
-                print(f'    {key}')
+                print(f'    Name, Username: {key}')
 
                 for info in value:
                     print('        Tweet Text:')
@@ -95,7 +95,7 @@ class Twitter:
 
 
             print('_' * len(url_string))
-            
+
             print()
             print()
             print()
