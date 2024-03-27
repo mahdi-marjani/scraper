@@ -50,6 +50,8 @@ class TwitterUser:
 
         self.repeated_loop: int = 0
 
+        self.link_counter: int = 0
+
 
     # ---------------- Twitter User Info ----------------
 
@@ -173,9 +175,23 @@ class TwitterUser:
         
         ydl.download([video_link])
 
+    def convert_replies_to_actual_number(self, k_string: str) -> int | float:
+        if k_string[-1] in ('K', 'k'):
+            num = float(k_string[:-1])
+            num *= 1000
+            return int(num) if num.is_integer() else num
+        
+        elif k_string[-1] in ('M', 'm'):
+            num = float(k_string[:-1])
+            num *= 1_000_000
+            return int(num) if num.is_integer() else num
+
+        else:
+            return int(k_string)
+
     def get_info_per_link(self, link: str, link_counter: int) -> dict[tuple[str, str], list[tuple[str | None, list[str] | None, list[str] | None, str | None]]]:
         self.driver.get(link)
-        wait = WebDriverWait(self.driver, 10)
+        self.link_counter = link_counter
 
         users: dict[tuple[str, str], list[tuple[str | None, list[str] | None, list[str] | None, str | None]]] = dict()
 
@@ -206,7 +222,9 @@ class TwitterUser:
 
                 if counter == 0:
                     try:
-                        number_of_replies = int(tweet.find_element(By.CSS_SELECTOR, "[data-testid='reply'] span[style='text-overflow: unset;']").text)
+                        number_of_replies = tweet.find_element(By.CSS_SELECTOR, "[data-testid='reply'] span[style='text-overflow: unset;']").text
+                        number_of_replies = self.convert_replies_to_actual_number(number_of_replies)
+                        
                     except:
                         number_of_replies = 0
 
