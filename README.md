@@ -1,5 +1,5 @@
-## scraper
-scraping twitter and instagram using selenium [firefox browser]
+# scraper
+scraping twitter and instagram without using their api (tweepy, etc) [firefox browser]
 
 
 ## twitter
