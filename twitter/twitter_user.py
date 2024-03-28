@@ -252,6 +252,7 @@ class TwitterUser:
                 tweetCardWrapper: str | None = None
 
 
+
                 # Tweet Text
                 try:
                     print()
@@ -301,7 +302,6 @@ class TwitterUser:
                             self.image_download_index += 1
                         self.visited_images_of_users.append((username, name, tweetLink))
 
-                    sleep(1)
                 except:
                     tweetPhotoList = None
                     print('No photo found.')
@@ -342,7 +342,6 @@ class TwitterUser:
                         self.video_download_index += 1
                         self.visited_videos_of_users.append((username, name, tweetLink))
 
-                    sleep(1)
                 except:
                     tweetVideoList = None
                     print('No video found.')
@@ -370,9 +369,9 @@ class TwitterUser:
                         tweetLink = link
 
 
-
                     if tweetLink is not None and (username, name, tweetLink) not in self.visited_cardwrapper_of_users:
                         self.visited_cardwrapper_of_users.append((username, name, tweetLink))
+
                 except:
                     tweetCardWrapper = None
                     print('No card wrapper found.')
